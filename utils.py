@@ -356,3 +356,27 @@ def collatz_sequence(n):
             n = 3 * n + 1
         sequence.append(n)
     return sequence
+
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+def nCr(n, r):
+    if r > n or r < 0:
+        return 0
+    if r == 0 or r == n:
+        return 1
+    # C(n, r) == C(n, n-r)
+    r = min(r, n - r)  
+    result = 1
+    for i in range(1, r + 1):
+        result = result * (n - i + 1) // i
+    return result
