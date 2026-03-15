@@ -4,7 +4,14 @@ from utils import *
 # Euler Problem 3
 
 def solve():
-    pass # TODO: Implement the solution for Problem 3
+    n = 600851475143
+    factor = 2
+    while factor * factor <= n:
+        if n % factor == 0:
+            n //= factor
+        else:
+            factor += 1
+    return n
 
 if __name__ == '__main__':
     run(solve, problem_id=3)
