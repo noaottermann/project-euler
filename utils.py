@@ -17,18 +17,13 @@ def generate_permutations(s):
     return permutations
 
 def proper_divisors(n):
-    divisors = []
-    for i in range(1, n):
+    divisors = [1]
+    for i in range(2, int(n**0.5) + 1):
         if n % i == 0:
             divisors.append(i)
+            if i != n // i:
+                divisors.append(n // i)
     return divisors
-
-def count_divisors(n):
-    count = 2
-    for i in range(2, n):
-        if n % i == 0:
-            count += 1
-    return count
 
 def sum_of_divisors(n):
     total = n+1
@@ -316,3 +311,28 @@ def is_pandigital(n, digits=None):
     else:
         digits = set(str(digit) for digit in digits)
     return set(str_n) == digits and len(str_n) == len(digits)
+
+def sieve_of_eratosthenes(limit):
+    is_prime = [True] * (limit + 1)
+    is_prime[0] = is_prime[1] = False
+    for i in range(2, int(limit**0.5) + 1):
+        if is_prime[i]:
+            for j in range(i * i, limit + 1, i):
+                is_prime[j] = False
+    return [i for i in range(limit + 1) if is_prime[i]]
+
+def count_divisors(n):
+    count = 1
+    d = 2
+    temp = n
+    while d * d <= temp:
+        if temp % d == 0:
+            exponent = 0
+            while temp % d == 0:
+                exponent += 1
+                temp //= d
+            count *= (exponent + 1)
+        d += 1
+    if temp > 1:
+        count *= 2
+    return count
