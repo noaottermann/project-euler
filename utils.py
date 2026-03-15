@@ -336,3 +336,23 @@ def count_divisors(n):
     if temp > 1:
         count *= 2
     return count
+
+def collatz_length(n):
+    length = 1
+    while n != 1:
+        if n % 2 == 0:
+            n //= 2
+        else:
+            n = 3 * n + 1
+        length += 1
+    return length
+
+def collatz_sequence(n):
+    sequence = [n]
+    while n != 1:
+        if n % 2 == 0:
+            n //= 2
+        else:
+            n = 3 * n + 1
+        sequence.append(n)
+    return sequence
