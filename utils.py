@@ -65,13 +65,18 @@ def prime_factors(n):
             n //= i
     return factors
 
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
-
-def lcm(a, b):
-    return a * b // gcd(a, b)
+def gcd(*args):
+    gcd_value = args[0]
+    for num in args[1:]:
+        while num:
+            gcd_value, num = num, gcd_value % num
+    return gcd_value
+    
+def lcm(*args):
+    lcm_value = 1
+    for num in args:
+        lcm_value = lcm_value * num // gcd(lcm_value, num)
+    return lcm_value
 
 def is_palindrome(n):
     s = str(n)
