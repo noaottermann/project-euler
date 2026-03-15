@@ -4,7 +4,7 @@ from utils import *
 # Euler Problem 20
 
 def solve():
-    pass # TODO: Implement the solution for Problem 20
+    return sum_digits(factorial(100))
 
 if __name__ == '__main__':
     run(solve, problem_id=20)

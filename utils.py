@@ -380,3 +380,15 @@ def nCr(n, r):
     for i in range(1, r + 1):
         result = result * (n - i + 1) // i
     return result
+
+def recurring_cycle_length(n):
+        remainders = {}
+        remainder = 1
+        position = 0
+        while remainder != 0:
+            if remainder in remainders:
+                return position - remainders[remainder]
+            remainders[remainder] = position
+            remainder = (remainder * 10) % n
+            position += 1
+        return 0
