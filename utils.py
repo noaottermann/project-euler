@@ -308,3 +308,11 @@ def is_truncatable_right(n):
 def are_permutations(*args):
     sorted_args = [sorted(str(arg)) for arg in args]
     return all(sorted_arg == sorted_args[0] for sorted_arg in sorted_args)
+
+def is_pandigital(n, digits=None):
+    str_n = str(n)
+    if digits is None:
+        digits = set(str(i) for i in range(1, len(str_n) + 1))
+    else:
+        digits = set(str(digit) for digit in digits)
+    return set(str_n) == digits and len(str_n) == len(digits)
