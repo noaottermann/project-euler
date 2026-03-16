@@ -81,7 +81,7 @@ def factorial(n):
     if n == 0:
         return 1
     result = 1
-    for i in range(1, n + 1):
+    for i in range(2, n + 1):
         result *= i
     return result
 
@@ -392,3 +392,22 @@ def recurring_cycle_length(n):
             remainder = (remainder * 10) % n
             position += 1
         return 0
+
+def is_curious_fraction(numerator, denominator):
+    if numerator % 10 == 0 and denominator % 10 == 0:
+        return False
+    str_num = str(numerator)
+    str_den = str(denominator)
+    common_digits = set(str_num) & set(str_den)
+    for digit in common_digits:
+        if digit == '0':
+            continue
+        new_num_str = str_num.replace(digit, '', 1)
+        new_den_str = str_den.replace(digit, '', 1)
+        if new_num_str == '' or new_den_str == '':
+            continue
+        new_num = int(new_num_str)
+        new_den = int(new_den_str)
+        if new_den != 0 and numerator * new_den == denominator * new_num:
+            return True
+    return False
