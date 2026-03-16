@@ -411,3 +411,6 @@ def is_curious_fraction(numerator, denominator):
         if new_den != 0 and numerator * new_den == denominator * new_num:
             return True
     return False
+
+def are_sexy_primes(a, b):
+    return is_prime(a) and is_prime(b) and abs(a - b) == 6
