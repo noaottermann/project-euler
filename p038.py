@@ -5,6 +5,7 @@ from utils import *
 
 def solve():
     # n > 1 because we need at least two multiples to concatenate
+    # n < 10 because the concatenation of i, 2*i, ..., n*i will have more than 9 digits if n >= 10
     # 10**(9 // n) is the largest integer i such that the concatenation of i, 2*i, ..., n*i has at most 9 digits
     maximum_pandigital = 0
     for n in range(2, 10):
