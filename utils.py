@@ -414,3 +414,33 @@ def is_curious_fraction(numerator, denominator):
 
 def are_sexy_primes(a, b):
     return is_prime(a) and is_prime(b) and abs(a - b) == 6
+
+def is_twin_prime(n):
+    return is_prime(n) and (is_prime(n - 2) or is_prime(n + 2))
+
+def is_cousin_prime(n):
+    return is_prime(n) and (is_prime(n - 4) or is_prime(n + 4))
+
+def is_sophie_germain_prime(n):
+    return is_prime(n) and is_prime(2 * n + 1)
+
+def is_safe_prime(n):
+    return is_prime(n) and is_prime((n - 1) // 2)
+
+def is_mersenne_prime(n):
+    if n < 1:
+        return False
+    p = 1
+    while True:
+        mersenne = (1 << p) - 1  # 2^p - 1
+        if mersenne == n:
+            return is_prime(mersenne)
+        elif mersenne > n:
+            return False
+        p += 1
+
+def is_fibonacci(n):
+    return is_perfect_square(5 * n * n + 4) or is_perfect_square(5 * n * n - 4)
+
+def is_composite(n):
+    return n > 1 and not is_prime(n)
