@@ -272,16 +272,6 @@ def is_truncatable_prime(n):
             return False
     return True
 
-def is_circular_prime(n):
-    if n < 10:
-        return is_prime(n)
-    str_n = str(n)
-    for i in range(len(str_n)):
-        rotated = int(str_n[i:] + str_n[:i])
-        if not is_prime(rotated):
-            return False
-    return True
-
 def is_truncatable_left(n):
     if n < 10:
         return False
@@ -462,3 +452,52 @@ def is_permutation(a, b):
     if len(str_a) != len(str_b):
         return False
     return sorted(str_a) == sorted(str_b)
+
+def is_circular(n):
+    str_n = str(n)
+    for i in range(len(str_n)):
+        rotated = int(str_n[i:] + str_n[:i])
+        if rotated == n:
+            return True
+    return False
+
+def is_circular_prime(n):
+    if n < 10:
+        return is_prime(n)
+    str_n = str(n)
+    for i in range(len(str_n)):
+        rotated = int(str_n[i:] + str_n[:i])
+        if not is_prime(rotated):
+            return False
+    return True
+
+def is_circular_composite(n):
+    if n < 10:
+        return not is_prime(n) and n > 1
+    str_n = str(n)
+    for i in range(len(str_n)):
+        rotated = int(str_n[i:] + str_n[:i])
+        if is_prime(rotated) or rotated <= 1:
+            return False
+    return True
+
+def is_circular_permutation(a, b):
+    str_a = str(a)
+    str_b = str(b)
+    if len(str_a) != len(str_b):
+        return False
+    for i in range(len(str_a)):
+        rotated = str_a[i:] + str_a[:i]
+        if rotated == str_b:
+            return True
+    return False
+
+def is_lychrel(n, max_iterations=50):
+    seen = set()
+    while n not in seen and max_iterations > 0:
+        seen.add(n)
+        n += reverse_num(n)
+        max_iterations -= 1
+        if str(n) == str(n)[::-1]:
+            return False
+    return True
