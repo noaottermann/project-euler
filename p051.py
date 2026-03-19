@@ -5,6 +5,7 @@ from utils import *
 
 def solve():
     # n is the number of digits in the prime, d is the digit to be replaced, p is the prime number
+    # We look for primes with at least 3 occurrences of the same digit, and then we replace that digit with all possible digits and count how many of those are prime. If we find a prime that has exactly 8 such replacements, we return it
     for n in range(1, 10):
         for d in range(10):
             for p in sieve_of_eratosthenes(10**n, 10**(n+1)):

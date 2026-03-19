@@ -455,3 +455,10 @@ def distinct_prime_factors(n):
     if n > 1:
         count += 1
     return count
+
+def is_permutation(a, b):
+    str_a = str(a)
+    str_b = str(b)
+    if len(str_a) != len(str_b):
+        return False
+    return sorted(str_a) == sorted(str_b)
