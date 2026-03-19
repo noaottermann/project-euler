@@ -312,14 +312,14 @@ def is_pandigital(n, digits=None):
         digits = set(str(digit) for digit in digits)
     return set(str_n) == digits and len(str_n) == len(digits)
 
-def sieve_of_eratosthenes(limit):
-    is_prime = [True] * (limit + 1)
-    is_prime[0] = is_prime[1] = False
-    for i in range(2, int(limit**0.5) + 1):
-        if is_prime[i]:
-            for j in range(i * i, limit + 1, i):
-                is_prime[j] = False
-    return [i for i in range(limit + 1) if is_prime[i]]
+def sieve_of_eratosthenes(min_limit, max_limit):
+    sieve = [True] * max_limit
+    sieve[0] = sieve[1] = False
+    for i in range(2, int(max_limit**0.5) + 1):
+        if sieve[i]:
+            for j in range(i * i, max_limit, i):
+                sieve[j] = False
+    return [i for i in range(min_limit, max_limit) if sieve[i]]
 
 def count_divisors(n):
     count = 1
