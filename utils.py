@@ -501,3 +501,16 @@ def is_lychrel(n, max_iterations=50):
         if str(n) == str(n)[::-1]:
             return False
     return True
+
+def is_happy(n, max_iterations=1000):
+    seen = set()
+    while n not in seen and max_iterations > 0:
+        seen.add(n)
+        n = sum(int(digit) ** 2 for digit in str(n))
+        max_iterations -= 1
+        if n == 1:
+            return True
+    return False
+
+def is_sad(n):
+    return not is_happy(n)

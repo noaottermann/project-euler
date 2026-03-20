@@ -4,7 +4,17 @@ from utils import *
 # Euler Problem 59
 
 def solve():
-    pass # TODO: Implement the solution for Problem 59
+    # Bruteforcing all 26^3 possibilities
+    with open('p059_cipher.txt') as f:
+        cipher = list(map(int, f.read().split(',')))
+    for a in range(97, 123):
+        for b in range(97, 123):
+            for c in range(97, 123):
+                key = [a, b, c]
+                decrypted = [cipher[i] ^ key[i % 3] for i in range(len(cipher))]
+                # Check if all characters are printable
+                if all(32 <= x <= 126 for x in decrypted):
+                    return sum(decrypted)
 
 if __name__ == '__main__':
     run(solve, problem_id=59)
