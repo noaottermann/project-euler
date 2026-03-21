@@ -7,14 +7,62 @@ def product_digits(n):
         product *= int(digit)
     return product
 
-def generate_permutations(s):
-    if len(s) <= 1:
-        return [s]
-    permutations = []
-    for i, char in enumerate(s):
-        for perm in generate_permutations(s[:i] + s[i+1:]):
-            permutations.append(char + perm)
-    return permutations
+def generate_permutations(*args):
+    """
+    Générateur de permutations intelligent s'adaptant au type d'entrée.
+    Gère les chaînes, les listes, et les alternatives multiples.
+    """
+    if not args:
+        return []
+
+    if len(args) == 1 and isinstance(args[0], list):
+        args = tuple(args[0])
+
+    if len(args) == 1 and isinstance(args[0], str):
+        s = args[0]
+        if len(s) <= 1:
+            return [s]
+        permutations = []
+        for i, char in enumerate(s):
+            for perm in generate_permutations(s[:i] + s[i+1:]):
+                permutations.append(char + perm)
+        return permutations
+    else:
+        normalized_args = []
+        for arg in args:
+            if isinstance(arg, list):
+                normalized_args.append(arg)
+            else:
+                normalized_args.append([str(arg)])
+
+        def get_combinations(lists):
+            if not lists:
+                return [[]]
+            first_list = lists[0]
+            rest_combinations = get_combinations(lists[1:])
+            
+            combos = []
+            for item in first_list:
+                for combo in rest_combinations:
+                    combos.append([str(item)] + combo)
+            return combos
+
+        def _permute_items(items):
+            if len(items) == 1:
+                return [items[0]]
+            perms = []
+            for i, item in enumerate(items):
+                for p in _permute_items(items[:i] + items[i+1:]):
+                    perms.append(item + p)
+            return perms
+
+        all_combinations = get_combinations(normalized_args)
+        
+        final_permutations = []
+        for combo in all_combinations:
+            final_permutations.extend(_permute_items(combo))
+            
+        return final_permutations
 
 def proper_divisors(n):
     divisors = [1]
@@ -248,15 +296,6 @@ def is_untouchable(n):
 def reverse_num(num):
         return int(str(num)[::-1])
 
-def is_lychrel(n):
-    seen = set()
-    while n not in seen:
-        seen.add(n)
-        n += reverse_num(n)
-        if str(n) == str(n)[::-1]:
-            return False
-    return True
-
 def is_emirp(n):
     if not is_prime(n):
         return False
@@ -302,14 +341,16 @@ def is_pandigital(n, digits=None):
         digits = set(str(digit) for digit in digits)
     return set(str_n) == digits and len(str_n) == len(digits)
 
-def sieve_of_eratosthenes(min_limit, max_limit):
-    sieve = [True] * max_limit
+def sieve_of_eratosthenes(start, end=None):
+    if end is None:
+        start, end = 0, start
+    sieve = [True] * end
     sieve[0] = sieve[1] = False
-    for i in range(2, int(max_limit**0.5) + 1):
+    for i in range(2, int(end**0.5) + 1):
         if sieve[i]:
-            for j in range(i * i, max_limit, i):
+            for j in range(i * i, end, i):
                 sieve[j] = False
-    return [i for i in range(min_limit, max_limit) if sieve[i]]
+    return [i for i in range(start, end) if sieve[i]]
 
 def count_divisors(n):
     count = 1
@@ -514,3 +555,20 @@ def is_happy(n, max_iterations=1000):
 
 def is_sad(n):
     return not is_happy(n)
+
+def are_concat_primes(a, b):
+    return is_prime(int(str(a) + str(b))) and is_prime(int(str(b) + str(a)))
+
+def polygonal(s, n):
+    if s == 3:
+        return n * (n + 1) // 2
+    elif s == 4:
+        return n * n
+    elif s == 5:
+        return n * (3 * n - 1) // 2
+    elif s == 6:
+        return n * (2 * n - 1)
+    elif s == 7:
+        return n * (5 * n - 3) // 2
+    elif s == 8:
+        return n * (3 * n - 2)
