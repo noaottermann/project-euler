@@ -12,8 +12,9 @@ def solve():
             for c in range(97, 123):
                 key = [a, b, c]
                 decrypted = [cipher[i] ^ key[i % 3] for i in range(len(cipher))]
-                # Check if all characters are printable
-                if all(32 <= x <= 126 for x in decrypted):
+                decrypted_text = ''.join(map(chr, decrypted))
+                if [word in decrypted_text for word in [' the ', ' and ', ' to ', ' of ', ' a ', ' in ', ' that ', ' is ', ' was ', ' he ']].count(True) >= 3:
+                    print(f'Key: {key}, Decrypted text: {decrypted_text}')
                     return sum(decrypted)
 
 if __name__ == '__main__':
