@@ -6,7 +6,7 @@ from utils import *
 def solve():
     count = 0
     for n in range(1, 10000):
-        if not is_perfect_square(n) and len(period_continued_fraction(n)) % 2 == 1:
+        if len(period_root_continued_fraction(n)) % 2 == 1:
             count += 1
     return count
 

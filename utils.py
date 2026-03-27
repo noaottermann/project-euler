@@ -572,7 +572,9 @@ def are_cyclic(length=1, *args):
             return False
     return True
 
-def period_continued_fraction(n):
+def period_root_continued_fraction(n):
+    if is_perfect_square(n):
+        return []
     m = 0
     d = 1
     a0 = a = int(n**0.5)
