@@ -14,17 +14,17 @@ def solve():
             for c in primes:
                 if c <= b:
                     continue
-                if not (are_concat_primes(a, c) and are_concat_primes(b, c)):
+                if any(not are_concat_primes(x, c) for x in (a, b)):
                     continue
                 for d in primes:
                     if d <= c:
                         continue
-                    if not (are_concat_primes(a, d) and are_concat_primes(b, d) and are_concat_primes(c, d)):
+                    if any(not are_concat_primes(x, d) for x in (a, b, c)):
                         continue
                     for e in primes:
                         if e <= d:
                             continue
-                        if not (are_concat_primes(a, e) and are_concat_primes(b, e) and are_concat_primes(c, e) and are_concat_primes(d, e)):
+                        if any(not are_concat_primes(x, e) for x in (a, b, c, d)):
                             continue
                         return a + b + c + d + e
 

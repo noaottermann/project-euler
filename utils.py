@@ -560,15 +560,14 @@ def are_concat_primes(a, b):
     return is_prime(int(str(a) + str(b))) and is_prime(int(str(b) + str(a)))
 
 def polygonal(s, n):
-    if s == 3:
-        return n * (n + 1) // 2
-    elif s == 4:
-        return n * n
-    elif s == 5:
-        return n * (3 * n - 1) // 2
-    elif s == 6:
-        return n * (2 * n - 1)
-    elif s == 7:
-        return n * (5 * n - 3) // 2
-    elif s == 8:
-        return n * (3 * n - 2)
+    return n * (n * (s - 2) - (s - 4)) // 2
+    
+def are_cyclic(length=1, *args):
+    if len(args) < 2:
+        return False
+    for i in range(len(args)):
+        current = str(args[i])
+        next_num = str(args[(i + 1) % len(args)])
+        if current[-length:] != next_num[:length]:
+            return False
+    return True
