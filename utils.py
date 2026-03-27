@@ -571,3 +571,17 @@ def are_cyclic(length=1, *args):
         if current[-length:] != next_num[:length]:
             return False
     return True
+
+def period_continued_fraction(n):
+    m = 0
+    d = 1
+    a0 = a = int(n**0.5)
+    period = []
+    while True:
+        m = d * a - m
+        d = (n - m * m) // d
+        a = (a0 + m) // d
+        period.append(a)
+        if a == 2 * a0:
+            break
+    return period
