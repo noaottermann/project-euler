@@ -587,3 +587,19 @@ def period_root_continued_fraction(n):
         if a == 2 * a0:
             break
     return period
+
+def to_digits(n):
+    return list(map(int, str(n)))
+
+def from_digits(digits):
+    return int(''.join(map(str, digits)))
+
+def add_to_digit_list(digits, number):
+    carry = number
+    for i in range(len(digits) - 1, -1, -1):
+        total = digits[i] + carry
+        digits[i] = total % 10
+        carry = total // 10
+    while carry > 0:
+        digits.insert(0, carry % 10)
+        carry //= 10
