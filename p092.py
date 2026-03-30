@@ -4,6 +4,7 @@ from utils import *
 # Euler Problem 92
 
 def solve():
+    # The maximum number is 9999999, so the maximum sum of squares of digits is 9^2 * 7 = 567
     cache = [0] * (9 * 9 * 7 + 1)
     cache[1] = 1
     cache[89] = 89

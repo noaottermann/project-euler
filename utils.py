@@ -732,3 +732,7 @@ def add_to_digit_list(digits, number):
     while carry > 0:
         digits.insert(0, carry % 10)
         carry //= 10
+
+def is_subsequence(sub, seq):
+    it = iter(seq)
+    return all(any(x == s for x in it) for s in sub)
