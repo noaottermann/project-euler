@@ -28,6 +28,14 @@ def sum_digits(n):
         total += digit
     return total
 
+def sum_squares_digits(n):
+    n = abs(n)
+    total = 0
+    while n:
+        n, digit = divmod(n, 10)
+        total += digit * digit
+    return total
+
 def product_digits(n):
     n = abs(n)
     if n == 0:
