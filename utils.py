@@ -1,10 +1,41 @@
+from functools import reduce
+from itertools import permutations, product
+from math import comb as _comb
+from math import factorial as _factorial
+from math import gcd as _gcd
+from math import isqrt
+
+
+_DIGIT_FACTORIALS = [
+    1,
+    1,
+    2,
+    6,
+    24,
+    120,
+    720,
+    5040,
+    40320,
+    362880,
+]
+
+
 def sum_digits(n):
-    return sum(int(digit) for digit in str(n))
+    n = abs(n)
+    total = 0
+    while n:
+        n, digit = divmod(n, 10)
+        total += digit
+    return total
 
 def product_digits(n):
+    n = abs(n)
+    if n == 0:
+        return 0
     product = 1
-    for digit in str(n):
-        product *= int(digit)
+    while n:
+        n, digit = divmod(n, 10)
+        product *= digit
     return product
 
 def generate_permutations(*args):
@@ -22,157 +53,239 @@ def generate_permutations(*args):
         s = args[0]
         if len(s) <= 1:
             return [s]
-        permutations = []
-        for i, char in enumerate(s):
-            for perm in generate_permutations(s[:i] + s[i+1:]):
-                permutations.append(char + perm)
-        return permutations
-    else:
-        normalized_args = []
-        for arg in args:
-            if isinstance(arg, list):
-                normalized_args.append(arg)
-            else:
-                normalized_args.append([str(arg)])
+        return [''.join(p) for p in permutations(s)]
 
-        def get_combinations(lists):
-            if not lists:
-                return [[]]
-            first_list = lists[0]
-            rest_combinations = get_combinations(lists[1:])
-            
-            combos = []
-            for item in first_list:
-                for combo in rest_combinations:
-                    combos.append([str(item)] + combo)
-            return combos
+    normalized_args = []
+    for arg in args:
+        if isinstance(arg, list):
+            normalized_args.append([str(item) for item in arg])
+        else:
+            normalized_args.append([str(arg)])
 
-        def _permute_items(items):
-            if len(items) == 1:
-                return [items[0]]
-            perms = []
-            for i, item in enumerate(items):
-                for p in _permute_items(items[:i] + items[i+1:]):
-                    perms.append(item + p)
-            return perms
+    final_permutations = []
+    for combo in product(*normalized_args):
+        for perm in permutations(combo):
+            final_permutations.append(''.join(perm))
 
-        all_combinations = get_combinations(normalized_args)
-        
-        final_permutations = []
-        for combo in all_combinations:
-            final_permutations.extend(_permute_items(combo))
-            
-        return final_permutations
+    return final_permutations
 
 def proper_divisors(n):
+    if n <= 1:
+        return [1]
     divisors = [1]
-    for i in range(2, int(n**0.5) + 1):
+    limit = isqrt(n)
+    for i in range(2, limit + 1):
         if n % i == 0:
             divisors.append(i)
-            if i != n // i:
-                divisors.append(n // i)
+            other = n // i
+            if other != i:
+                divisors.append(other)
+    return divisors
+
+
+def _sum_proper_divisors(n):
+    if n <= 1:
+        return 1
+    total = 1
+    limit = isqrt(n)
+    for i in range(2, limit + 1):
+        if n % i == 0:
+            total += i
+            other = n // i
+            if other != i:
+                total += other
+    return total
+
+
+def _all_divisors(n):
+    if n <= 1:
+        return [1]
+    divisors = [1]
+    temp = n
+    exponent = 0
+    while temp % 2 == 0:
+        exponent += 1
+        temp //= 2
+    if exponent:
+        current = divisors[:]
+        mult = 1
+        for _ in range(exponent):
+            mult *= 2
+            for d in current:
+                divisors.append(d * mult)
+    p = 3
+    while p * p <= temp:
+        exponent = 0
+        while temp % p == 0:
+            exponent += 1
+            temp //= p
+        if exponent:
+            current = divisors[:]
+            mult = 1
+            for _ in range(exponent):
+                mult *= p
+                for d in current:
+                    divisors.append(d * mult)
+        p += 2
+    if temp > 1:
+        divisors += [d * temp for d in divisors]
     return divisors
 
 def sum_of_divisors(n):
-    total = n+1
-    for i in range(2, n):
+    if n <= 0:
+        return n + 1
+    if n == 1:
+        return 2
+    total = n + 1
+    limit = isqrt(n)
+    for i in range(2, limit + 1):
         if n % i == 0:
             total += i
+            other = n // i
+            if other != i:
+                total += other
     return total
 
 def is_abundant(n):
-    return sum(proper_divisors(n)) > n
+    return _sum_proper_divisors(n) > n
 
 def is_deficient(n):
-    return sum(proper_divisors(n)) < n
+    return _sum_proper_divisors(n) < n
 
 def is_perfect(n):
-    return sum(proper_divisors(n)) == n
+    return _sum_proper_divisors(n) == n
 
 def are_amicable(a, b):
-    return sum(proper_divisors(a)) == b and sum(proper_divisors(b)) == a
+    return _sum_proper_divisors(a) == b and _sum_proper_divisors(b) == a
 
 def is_prime(n):
     if n <= 1:
         return False
-    for i in range(2, int(n**0.5) + 1):
-        if n % i == 0:
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    limit = isqrt(n)
+    i = 5
+    while i <= limit:
+        if n % i == 0 or n % (i + 2) == 0:
             return False
+        i += 6
     return True
 
 def prime_factors(n):
     factors = []
-    for i in range(2, n + 1):
-        while n % i == 0:
-            factors.append(i)
-            n //= i
+    while n % 2 == 0:
+        factors.append(2)
+        n //= 2
+    d = 3
+    while d * d <= n:
+        while n % d == 0:
+            factors.append(d)
+            n //= d
+        d += 2
+    if n > 1:
+        factors.append(n)
     return factors
 
 def gcd(*args):
-    gcd_value = args[0]
-    for num in args[1:]:
-        while num:
-            gcd_value, num = num, gcd_value % num
-    return gcd_value
+    return reduce(_gcd, args)
     
 def lcm(*args):
-    lcm_value = 1
-    for num in args:
-        lcm_value = lcm_value * num // gcd(lcm_value, num)
-    return lcm_value
+    if not args:
+        return 1
+
+    def _lcm(a, b):
+        return a // _gcd(a, b) * b
+
+    return reduce(_lcm, args, 1)
 
 def is_palindrome(n):
     s = str(n)
     return s == s[::-1]
 
 def factorial(n):
-    if n == 0:
-        return 1
-    result = 1
-    for i in range(2, n + 1):
-        result *= i
-    return result
+    return _factorial(n)
 
 def fibonacci(n):
     if n <= 0:
         return 0
-    elif n == 1:
-        return 1
-    else:
-        a, b = 0, 1
-        for _ in range(2, n + 1):
-            a, b = b, a + b
-        return b
+    a, b = 0, 1
+    for bit in bin(n)[2:]:
+        c = a * ((b << 1) - a)
+        d = a * a + b * b
+        if bit == '0':
+            a, b = c, d
+        else:
+            a, b = d, c + d
+    return a
     
 def is_perfect_square(n):
-    return int(n**0.5)**2 == n
+    if n < 0:
+        return False
+    root = isqrt(n)
+    return root * root == n
 
 def is_perfect_cube(n):
-    return int(n**(1/3))**3 == n
+    if n < 0:
+        root = round((-n) ** (1 / 3))
+        return -root * root * root == n
+    root = round(n ** (1 / 3))
+    return root * root * root == n
 
 def is_triangular(n):
-    x = (int(((-1 + (1 + 8 * n)**0.5) / 2)))
+    if n < 0:
+        return False
+    disc = 1 + 8 * n
+    root = isqrt(disc)
+    if root * root != disc:
+        return False
+    x = (root - 1) // 2
     return x * (x + 1) // 2 == n
 
 def is_hexagonal(n):
-    x = (int((1 + (1 + 8 * n)**0.5) / 4))
+    if n < 0:
+        return False
+    disc = 1 + 8 * n
+    root = isqrt(disc)
+    if root * root != disc:
+        return False
+    x = (1 + root) // 4
     return x * (2 * x - 1) == n
 
 def is_pentagonal(n):
-    x = (int((1 + (1 + 24 * n)**0.5) / 6))
+    if n < 0:
+        return False
+    disc = 1 + 24 * n
+    root = isqrt(disc)
+    if root * root != disc:
+        return False
+    x = (1 + root) // 6
     return x * (3 * x - 1) // 2 == n
 
 def is_heptagonal(n):
-    x = (int((1 + (1 + 40 * n)**0.5) / 10))
+    if n < 0:
+        return False
+    disc = 1 + 40 * n
+    root = isqrt(disc)
+    if root * root != disc:
+        return False
+    x = (1 + root) // 10
     return x * (5 * x - 3) // 2 == n
 
 def is_octagonal(n):
-    x = (int((1 + (1 + 3 * n)**0.5) / 3))
+    if n < 0:
+        return False
+    disc = 1 + 3 * n
+    root = isqrt(disc)
+    if root * root != disc:
+        return False
+    x = (1 + root) // 3
     return x * (3 * x - 2) == n
 
 def is_sphenic(n):
-    factors = set(prime_factors(n))
-    return len(factors) == 3 and all(prime_factors(n).count(factor) == 1 for factor in factors)
+    factors = prime_factors(n)
+    return len(factors) == 3 and len(set(factors)) == 3
 
 def is_square_free(n):
     factors = prime_factors(n)
@@ -182,15 +295,15 @@ def is_coprime(a, b):
     return gcd(a, b) == 1
 
 def is_perfect_power(n):
-    for base in range(2, int(n**0.5) + 1):
-        power = 2
-        while True:
-            result = base ** power
-            if result == n:
-                return True
-            elif result > n:
-                break
-            power += 1
+    if n <= 1:
+        return False
+    limit = isqrt(n)
+    for base in range(2, limit + 1):
+        result = base * base
+        while result < n:
+            result *= base
+        if result == n:
+            return True
     return False
 
 def is_even(n):
@@ -206,7 +319,7 @@ def is_factor(a, b):
     return b % a == 0
 
 def is_curious(n):
-    return n == sum(factorial(int(digit)) for digit in str(n))
+    return n == sum(_DIGIT_FACTORIALS[int(digit)] for digit in str(n))
 
 def is_almost_prime(n, k):
     return len(set(prime_factors(n))) == k
@@ -219,7 +332,10 @@ def is_semi_prime(n):
     return len(factors) == 2 and factors[0] != factors[1]
 
 def is_pronic(n):
-    x = int(((-1 + (1 + 8 * n)**0.5) / 2))
+    if n < 0:
+        return False
+    root = isqrt(1 + 8 * n)
+    x = (root - 1) // 2
     return x * (x + 1) == n
 
 def is_kaprekar(n):
@@ -246,7 +362,7 @@ def is_rough(n, k):
 def are_coprime(*args):
     for i in range(len(args)):
         for j in range(i + 1, len(args)):
-            if not is_coprime(args[i], args[j]):
+            if _gcd(args[i], args[j]) != 1:
                 return False
     return True
 
@@ -254,13 +370,13 @@ def is_smith(n):
     if n < 10:
         return False
     sum_d = sum_digits(n)
-    sum_prime_factors = sum(sum(int(digit) for digit in str(factor)) for factor in prime_factors(n))
+    sum_prime_factors = sum(sum_digits(factor) for factor in prime_factors(n))
     return sum_d == sum_prime_factors
 
 def are_friendly(*args):
     if len(args) < 2:
         return False
-    abundances = [sum(proper_divisors(n)) / n for n in args]
+    abundances = [_sum_proper_divisors(n) / n for n in args]
     return all(abundance == abundances[0] for abundance in abundances)
 
 def is_harshad(n):
@@ -270,16 +386,16 @@ def is_harshad(n):
 def is_practical(n):
     if n < 2:
         return False
-    divisors = proper_divisors(n)
-    divisors.append(0)
+    divisors = _all_divisors(n)
     divisors.sort()
-    can_make = [False] * (n + 1)
-    can_make[0] = True
-    for divisor in divisors:
-        for i in range(n - divisor, -1, -1):
-            if can_make[i]:
-                can_make[i + divisor] = True
-    return all(can_make[i] for i in range(1, n + 1))
+    reach = 0
+    for d in divisors:
+        if d > reach + 1:
+            return False
+        reach += d
+        if reach >= n:
+            return True
+    return reach >= n
 
 def is_automorphic(n):
     sq = n ** 2
@@ -289,12 +405,12 @@ def is_untouchable(n):
     if n < 2:
         return False
     for i in range(1, n):
-        if sum(proper_divisors(i)) == n:
+        if _sum_proper_divisors(i) == n:
             return False
     return True
 
 def reverse_num(num):
-        return int(str(num)[::-1])
+    return int(str(num)[::-1])
 
 def is_emirp(n):
     if not is_prime(n):
@@ -344,26 +460,36 @@ def is_pandigital(n, digits=None):
 def sieve_of_eratosthenes(start, end=None):
     if end is None:
         start, end = 0, start
-    sieve = [True] * end
-    sieve[0] = sieve[1] = False
-    for i in range(2, int(end**0.5) + 1):
+    if end <= 2:
+        return [i for i in range(start, end) if i == 2]
+    sieve = bytearray(b"\x01") * end
+    sieve[0:2] = b"\x00\x00"
+    limit = isqrt(end - 1)
+    for i in range(2, limit + 1):
         if sieve[i]:
-            for j in range(i * i, end, i):
-                sieve[j] = False
+            start_i = i * i
+            step = i
+            sieve[start_i:end:step] = b"\x00" * (((end - start_i - 1) // step) + 1)
     return [i for i in range(start, end) if sieve[i]]
 
 def count_divisors(n):
     count = 1
-    d = 2
     temp = n
+    exponent = 0
+    while temp % 2 == 0:
+        exponent += 1
+        temp //= 2
+    if exponent:
+        count *= (exponent + 1)
+    d = 3
     while d * d <= temp:
-        if temp % d == 0:
-            exponent = 0
-            while temp % d == 0:
-                exponent += 1
-                temp //= d
+        exponent = 0
+        while temp % d == 0:
+            exponent += 1
+            temp //= d
+        if exponent:
             count *= (exponent + 1)
-        d += 1
+        d += 2
     if temp > 1:
         count *= 2
     return count
@@ -371,20 +497,20 @@ def count_divisors(n):
 def collatz_length(n):
     length = 1
     while n != 1:
-        if n % 2 == 0:
-            n //= 2
-        else:
+        if n & 1:
             n = 3 * n + 1
+        else:
+            n //= 2
         length += 1
     return length
 
 def collatz_sequence(n):
     sequence = [n]
     while n != 1:
-        if n % 2 == 0:
-            n //= 2
-        else:
+        if n & 1:
             n = 3 * n + 1
+        else:
+            n //= 2
         sequence.append(n)
     return sequence
 
@@ -403,26 +529,19 @@ def binary_search(arr, target):
 def nCr(n, r):
     if r > n or r < 0:
         return 0
-    if r == 0 or r == n:
-        return 1
-    # C(n, r) == C(n, n-r)
-    r = min(r, n - r)  
-    result = 1
-    for i in range(1, r + 1):
-        result = result * (n - i + 1) // i
-    return result
+    return _comb(n, r)
 
 def recurring_cycle_length(n):
-        remainders = {}
-        remainder = 1
-        position = 0
-        while remainder != 0:
-            if remainder in remainders:
-                return position - remainders[remainder]
-            remainders[remainder] = position
-            remainder = (remainder * 10) % n
-            position += 1
-        return 0
+    remainders = {}
+    remainder = 1
+    position = 0
+    while remainder != 0:
+        if remainder in remainders:
+            return position - remainders[remainder]
+        remainders[remainder] = position
+        remainder = (remainder * 10) % n
+        position += 1
+    return 0
 
 def is_curious_fraction(numerator, denominator):
     if numerator % 10 == 0 and denominator % 10 == 0:
@@ -461,14 +580,10 @@ def is_safe_prime(n):
 def is_mersenne_prime(n):
     if n < 1:
         return False
-    p = 1
-    while True:
-        mersenne = (1 << p) - 1  # 2^p - 1
-        if mersenne == n:
-            return is_prime(mersenne)
-        elif mersenne > n:
-            return False
-        p += 1
+    m = n + 1
+    if m & (m - 1) != 0:
+        return False
+    return is_prime(n)
 
 def is_fibonacci(n):
     return is_perfect_square(5 * n * n + 4) or is_perfect_square(5 * n * n - 4)
@@ -478,11 +593,17 @@ def is_composite(n):
 
 def distinct_prime_factors(n):
     count = 0
-    for i in range(2, int(n**0.5) + 1):
-        if n % i == 0:
+    if n % 2 == 0:
+        count += 1
+        while n % 2 == 0:
+            n //= 2
+    d = 3
+    while d * d <= n:
+        if n % d == 0:
             count += 1
-            while n % i == 0:
-                n //= i
+            while n % d == 0:
+                n //= d
+        d += 2
     if n > 1:
         count += 1
     return count
