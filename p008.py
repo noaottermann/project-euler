@@ -4,7 +4,7 @@ from utils import *
 # Euler Problem 8
 
 def solve():
-    digits = ''.join([line.strip() for line in open('p008_1000digits.txt')])
+    digits = ''.join([line.strip() for line in open('p008_1000_digits.txt')])
     max_product = 0
     for i in range(len(digits) - 13):
         product = 1
