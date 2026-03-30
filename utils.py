@@ -418,7 +418,11 @@ def is_untouchable(n):
     return True
 
 def reverse_num(num):
-    return int(str(num)[::-1])
+    rev = 0
+    while num > 0:
+        num, digit = divmod(num, 10)
+        rev = rev * 10 + digit
+    return rev
 
 def is_emirp(n):
     if not is_prime(n):
