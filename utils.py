@@ -740,3 +740,18 @@ def add_to_digit_list(digits, number):
 def is_subsequence(sub, seq):
     it = iter(seq)
     return all(any(x == s for x in it) for s in sub)
+
+def phi(n):
+    if n <= 0:
+        return 0
+    result = n
+    p = 2
+    while p * p <= n:
+        if n % p == 0:
+            while n % p == 0:
+                n //= p
+            result -= result // p
+        p += 1
+    if n > 1:
+        result -= result // n
+    return result
