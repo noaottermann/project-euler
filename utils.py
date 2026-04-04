@@ -755,3 +755,19 @@ def phi(n):
     if n > 1:
         result -= result // n
     return result
+
+def is_bouncy(n):
+    increasing = decreasing = False
+    last_digit = n % 10
+    n //= 10
+    while n > 0:
+        current_digit = n % 10
+        if current_digit < last_digit:
+            increasing = True
+        elif current_digit > last_digit:
+            decreasing = True
+        if increasing and decreasing:
+            return True
+        last_digit = current_digit
+        n //= 10
+    return False
